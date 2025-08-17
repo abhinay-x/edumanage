@@ -1,0 +1,66 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserRole() {
+      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function isSuperAdmin() {
+      return isAuthenticated() && getUserRole() == 'super_admin';
+    }
+    
+    function isTeacher() {
+      return isAuthenticated() && getUserRole() == 'teacher';
+    }
+    
+    function isStudent() {
+      return isAuthenticated() && getUserRole() == 'student';
+    }
+
+    // User profile images
+    match /profile-images/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isSuperAdmin());
+    }
+
+    // Assignment files uploaded by teachers
+    match /assignments/{assignmentId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isTeacher() || isSuperAdmin();
+    }
+
+    // Assignment submissions by students
+    match /submissions/{assignmentId}/{studentId}/{allPaths=**} {
+      allow read: if isAuthenticated() && (request.auth.uid == studentId || isTeacher() || isSuperAdmin());
+      allow write: if isAuthenticated() && request.auth.uid == studentId;
+    }
+
+    // Study resources uploaded by teachers/admins
+    match /resources/{resourceId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isTeacher() || isSuperAdmin();
+    }
+
+    // Study board files
+    match /study-boards/{boardId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isStudent() || isTeacher() || isSuperAdmin();
+    }
+
+    // General uploads (documents, images, etc.)
+    match /uploads/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isSuperAdmin());
+    }
+
+    // System files (only admins)
+    match /system/{allPaths=**} {
+      allow read, write: if isSuperAdmin();
+    }
+  }
+}

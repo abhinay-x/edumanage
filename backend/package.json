@@ -1,0 +1,26 @@
+{
+  "name": "edumanage-backend",
+  "version": "1.0.0",
+  "description": "EduManage Backend - Firebase Functions",
+  "main": "functions/index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "init-data": "cd functions/scripts && node initializeData.js"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.8.0",
+    "firebase-functions": "^4.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.9.0"
+  },
+  "private": true
+}
