@@ -103,8 +103,8 @@ function ProtectedRoute({ children, allowedRoles }) {
 function AppRoutes() {
   const { user, loading } = useAuth()
   
-  // Enable beforeunload warning for authenticated users
-  useBeforeUnload(!!user)
+  // Remove global beforeunload warning - it should only be used on specific forms/pages
+  // useBeforeUnload(!!user)
   
   if (loading) {
     return <LoadingSpinner />
