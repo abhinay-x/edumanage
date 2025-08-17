@@ -10,6 +10,9 @@
     "preview": "vite preview",
     "vercel-build": "npm install && npm run build"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
